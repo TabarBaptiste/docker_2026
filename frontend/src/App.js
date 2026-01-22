@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Edit, X, Calendar, Package, List, Plus, Trash2 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -199,7 +200,9 @@ function App() {
                     {/* Formulaire d'ajout */}
                     <section className="form-section">
                         <h2>
-                            <span className="section-icon">+</span>
+                            <span className="section-icon">
+                                <Plus size={20} />
+                            </span>
                             Nouveau produit
                         </h2>
                         <form onSubmit={handleSubmit}>
@@ -268,7 +271,9 @@ function App() {
                     {/* Liste des produits */}
                     <section className="list-section">
                         <h2>
-                            <span className="section-icon">☰</span>
+                            <span className="section-icon">
+                                <List size={20} />
+                            </span>
                             Inventaire
                         </h2>
 
@@ -279,7 +284,9 @@ function App() {
                             </div>
                         ) : products.length === 0 ? (
                             <div className="empty-state">
-                                <div className="empty-state-icon">📦</div>
+                                <div className="empty-state-icon">
+                                    <Package size={64} />
+                                </div>
                                 <p>Aucun produit dans l'inventaire</p>
                             </div>
                         ) : (
@@ -294,14 +301,14 @@ function App() {
                                                     className="btn-edit"
                                                     title="Modifier"
                                                 >
-                                                    ✏️
+                                                    <Edit size={16} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(product._id)}
                                                     className="btn-delete"
                                                     title="Supprimer"
                                                 >
-                                                    ✕
+                                                    <Trash2 size={16} />
                                                 </button>
                                             </div>
                                         </div>
@@ -317,6 +324,7 @@ function App() {
                                             </div>
                                         </div>
                                         <div className="product-date">
+                                            <Calendar size={14} />
                                             {new Date(product.createdAt).toLocaleDateString('fr-FR', {
                                                 day: 'numeric',
                                                 month: 'long',
@@ -335,7 +343,10 @@ function App() {
                     <div className="modal-overlay" onClick={closeEditModal}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                             <div className="modal-header">
-                                <h2>Modifier le produit</h2>
+                                <h2>
+                                    <Edit size={20} />
+                                    Modifier le produit
+                                </h2>
                                 <button onClick={closeEditModal} className="modal-close">×</button>
                             </div>
                             <form onSubmit={handleEditSubmit}>

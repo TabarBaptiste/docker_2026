@@ -232,7 +232,7 @@ header p {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    color: white;
 }
 
 /* Form Styles */
@@ -359,7 +359,7 @@ header p {
 }
 
 .empty-state-icon {
-    font-size: 4rem;
+    color: var(--text-muted);
     margin-bottom: 24px;
     opacity: 0.5;
 }
@@ -542,11 +542,6 @@ header p {
     gap: 6px;
 }
 
-.product-date::before {
-    content: '📅';
-    font-size: 0.875rem;
-}
-
 /* Stats Banner */
 .stats-banner {
     display: grid;
@@ -669,11 +664,6 @@ header p {
     display: flex;
     align-items: center;
     gap: 12px;
-}
-
-.modal-header h2::before {
-    content: '✏️';
-    font-size: 1.25rem;
 }
 
 .modal-close {
