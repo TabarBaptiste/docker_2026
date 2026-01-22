@@ -12,6 +12,8 @@ function App() {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [editingProduct, setEditingProduct] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
 
     const stats = useMemo(() => {
         const totalProducts = products.length;
@@ -99,6 +101,65 @@ function App() {
         } catch (err) {
             setError(err.message);
         }
+    };
+
+    const handleEdit = (product) => {
+        setEditingProduct(product);
+        setFormData({
+            name: product.name,
+            description: product.description || '',
+            price: product.price.toString(),
+            quantity: product.quantity.toString()
+        });
+        setShowEditModal(true);
+    };
+
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+        setError(null);
+
+        try {
+            const response = await fetch(`${API_URL}/products/${editingProduct._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    description: formData.description,
+                    price: parseFloat(formData.price),
+                    quantity: parseInt(formData.quantity)
+                })
+            });
+
+            if (!response.ok) throw new Error('Erreur lors de la modification du produit');
+
+            // Fermer la modal et réinitialiser
+            setShowEditModal(false);
+            setEditingProduct(null);
+            setFormData({
+                name: '',
+                description: '',
+                price: '',
+                quantity: ''
+            });
+
+            // Recharger la liste
+            fetchProducts();
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    const closeEditModal = () => {
+        setShowEditModal(false);
+        setEditingProduct(null);
+        setFormData({
+            name: '',
+            description: '',
+            price: '',
+            quantity: ''
+        });
     };
 
     return (
@@ -227,13 +288,22 @@ function App() {
                                     <div key={product._id} className="product-card">
                                         <div className="product-header">
                                             <h3>{product.name}</h3>
-                                            <button
-                                                onClick={() => handleDelete(product._id)}
-                                                className="btn-delete"
-                                                title="Supprimer"
-                                            >
-                                                ✕
-                                            </button>
+                                            <div className="product-actions">
+                                                <button
+                                                    onClick={() => handleEdit(product)}
+                                                    className="btn-edit"
+                                                    title="Modifier"
+                                                >
+                                                    ✏️
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(product._id)}
+                                                    className="btn-delete"
+                                                    title="Supprimer"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
                                         </div>
                                         <p className="product-description">{product.description || 'Aucune description disponible'}</p>
                                         <div className="product-details">
@@ -259,6 +329,84 @@ function App() {
                         )}
                     </section>
                 </div>
+
+                {/* Modal d'édition */}
+                {showEditModal && (
+                    <div className="modal-overlay" onClick={closeEditModal}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <h2>Modifier le produit</h2>
+                                <button onClick={closeEditModal} className="modal-close">×</button>
+                            </div>
+                            <form onSubmit={handleEditSubmit}>
+                                <div className="form-group">
+                                    <label htmlFor="edit-name">Nom du produit</label>
+                                    <input
+                                        type="text"
+                                        id="edit-name"
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleInputChange}
+                                        required
+                                        placeholder="MacBook Pro 16 pouces"
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="edit-description">Description</label>
+                                    <textarea
+                                        id="edit-description"
+                                        name="description"
+                                        value={formData.description}
+                                        onChange={handleInputChange}
+                                        placeholder="Décrivez votre produit..."
+                                        rows="3"
+                                    />
+                                </div>
+
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label htmlFor="edit-price">Prix (€)</label>
+                                        <input
+                                            type="number"
+                                            id="edit-price"
+                                            name="price"
+                                            value={formData.price}
+                                            onChange={handleInputChange}
+                                            required
+                                            min="0"
+                                            step="0.01"
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="edit-quantity">Quantité</label>
+                                        <input
+                                            type="number"
+                                            id="edit-quantity"
+                                            name="quantity"
+                                            value={formData.quantity}
+                                            onChange={handleInputChange}
+                                            required
+                                            min="0"
+                                            placeholder="0"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="modal-actions">
+                                    <button type="button" onClick={closeEditModal} className="btn-secondary">
+                                        Annuler
+                                    </button>
+                                    <button type="submit" className="btn-primary">
+                                        Modifier le produit
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
